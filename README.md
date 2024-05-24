@@ -45,7 +45,7 @@ To run the project locally, follow these steps:
 ## File Structure
 
 - `index.html`: Main page and map integration.
-- `noktascript22.js`: Main JavaScript file.
+- `noktascript.js`: Main JavaScript file.
 - `aras_results.html`: Page displaying ARAS analysis results.
 - `styles.css`: Stylesheet.
 
