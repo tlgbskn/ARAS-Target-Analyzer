@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARAS Results</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-container {
+            margin: 20px;
+        }
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table th {
+            background-color: #f8f9fa;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">ARAS Results</h2>
+        <div class="table-container">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Mevzi</th>
+                        <th>Toplam Puan</th>
+                        <th>Mesafe (m)</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function populateResults(results) {
+            const resultsTableBody = document.getElementById('resultsTableBody');
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${result.label}</td>
+                    <td>${result.totalScore.toFixed(2)}</td>
+                    <td>${result.distance.toFixed(2)}</td>
+                `;
+                resultsTableBody.appendChild(row);
+            });
+        }
+
+        // Receive and parse the results data passed from the main script
+        window.onload = function() {
+            const resultsData = JSON.parse(localStorage.getItem('arasResults'));
+            if (resultsData) {
+                populateResults(resultsData);
+            }
+        }
+    </script>
+</body>
+</html>
