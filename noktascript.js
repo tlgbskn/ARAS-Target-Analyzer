@@ -74,10 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
         marker.id = id;
 
         var popupContent = document.createElement('div');
-        popupContent.innerHTML = `Tür: ${type}<br>Koordinatlar: ${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}<br>Etiket: ${label}`;
+        popupContent.innerHTML = `Type: ${type}<br>Coordinates: ${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}<br>Label: ${label}`;
         if (type === 'mevzii') {
             var select = document.createElement('select');
-            select.innerHTML = '<option value="">Seçiniz</option>';
+            select.innerHTML = '<option value="">Select</option>';
             weaponSystems.forEach(function(system) {
                 select.innerHTML += `<option value="${system.range}" data-cost="${system.cost}" data-effectiveness="${system.effectiveness}" data-fireRate="${system.fireRate}" data-name="${system.name}">${system.name}</option>`;
             });
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         marker.bindPopup(popupContent);
-        mevziMenzilleri[id - 1] = { range: markerRange, cost: 0, effectiveness: 0, fireRate: 0, name: "" };
+        mevziMenzilleri[id - 1] = { range: markerRange, cost: 0, effectiveness: 0, fireRate: 0, name: "", label: label };
 
         var circleRadius = (type === 'kisitlama' ? 800 : 0);
         if (type === 'kisitlama' || type === 'mevzii') {
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     map.on('click', function(e) {
         var type = document.getElementById('manualType').value || 'hedef';
-        var label = prompt("İşaretçi için etiket girin:");
+        var label = prompt("Enter label for marker:");
         if (label !== null && label !== "") {
             addMarker(e.latlng, type, label);
         }
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var label = document.getElementById('manualLabel').value;
 
         if (!lat || !lng || !label) {
-            alert('Lütfen tüm alanları doldurun ve geçerli koordinatlar girin!');
+            alert('Please fill in all fields and enter valid coordinates!');
             return;
         }
 
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 map.removeLayer(lastMarker.circle);
             }
         } else {
-            alert("Silinecek işaretçi yok!");
+            alert("No marker to delete!");
         }
     });
 
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateTargetOptions() {
         var targetSelect = document.getElementById('targetSelection');
-        targetSelect.innerHTML = '<option value="">Hedef Seçiniz</option>';
+        targetSelect.innerHTML = '<option value="">Select Target</option>';
 
         markers.forEach(marker => {
             if (marker.type === 'hedef') {
@@ -229,10 +229,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function exportToExcel(markers) {
         var wb = XLSX.utils.book_new();
-        var ws_name = "Koordinatlar ve İlişkiler";
+        var ws_name = "Coordinates and Relationships";
 
-        var headers = ["ID", "Tür", "Enlem", "Boylam", "Etiket"];
-        var subHeaders = ["Mesafe (km)", "Açı (derece)", "Yön (milyem)", "Göreceli Yön"];
+        var headers = ["ID", "Type", "Latitude", "Longitude", "Label"];
+        var subHeaders = ["Distance (km)", "Angle (degrees)", "Direction (mils)", "Relative Direction"];
 
         var data = [headers.concat(subHeaders)];
 
@@ -253,19 +253,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var ws = XLSX.utils.aoa_to_sheet(data);
         XLSX.utils.book_append_sheet(wb, ws, ws_name);
-        XLSX.writeFile(wb, "koordinatlar_ve_iliskiler.xlsx");
+        XLSX.writeFile(wb, "coordinates_and_relationships.xlsx");
     }
 
     window.analyzeTargets = function() {
         var selectedTargetId = document.getElementById('targetSelection').value;
         if (!selectedTargetId) {
-            alert('Lütfen bir hedef seçin.');
+            alert('Please select a target.');
             return;
         }
 
         var selectedTarget = markers.find(marker => marker.id == selectedTargetId);
         if (!selectedTarget) {
-            alert('Seçilen hedef bulunamadı.');
+            alert('Selected target not found.');
             return;
         }
 
@@ -281,36 +281,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 if (canShoot && !isRestricted) {
-                    results.push({ id: marker.id, canShoot: true, label: marker.label });
+                    results.push({ id: marker.id, canShoot: true, label: marker.label, distance: distance });
                 } else {
-                    results.push({ id: marker.id, canShoot: false, label: marker.label });
+                    results.push({ id: marker.id, canShoot: false, label: marker.label, distance: distance });
                 }
             }
         });
 
         if (results.length === 0) {
-            alert('Mevzii yok veya hedefe atış yapılamıyor.');
+            alert('No positions or cannot shoot at the target.');
         } else {
-            exportResultsToExcel(results);
-            visualizeResultsOnMap(results);
+            visualizeShootingResults(results);
         }
     }
 
     function exportResultsToExcel(results) {
         var wb = XLSX.utils.book_new();
-        var ws_name = "Atış Analizi Sonuçları";
-        var headers = ["Mevzii ID", "Mevzii Etiket", "Atış Yapabilir"];
+        var ws_name = "Shooting Analysis Results";
+        var headers = ["Position ID", "Position Label", "Can Shoot"];
         var data = [headers];
 
         results.forEach(result => {
             var marker = markers.find(m => m.id === result.id);
-            var row = [result.id, marker ? marker.label : "", result.canShoot ? "Evet" : "Hayır"];
+            var row = [result.id, marker ? marker.label : "", result.canShoot ? "Yes" : "No"];
             data.push(row);
         });
 
         var ws = XLSX.utils.aoa_to_sheet(data);
         XLSX.utils.book_append_sheet(wb, ws, ws_name);
-        XLSX.writeFile(wb, "atis_analizi_sonuclari.xlsx");
+        XLSX.writeFile(wb, "shooting_analysis_results.xlsx");
     }
 
     function haversineDistance(coords1, coords2) {
@@ -350,21 +349,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getDirectionFromBearing(bearing) {
         if (bearing >= 337.5 || bearing < 22.5) {
-            return "K";
+            return "N";
         } else if (bearing >= 22.5 && bearing < 67.5) {
-            return "KD";
+            return "NE";
         } else if (bearing >= 67.5 && bearing < 112.5) {
-            return "D";
+            return "E";
         } else if (bearing >= 112.5 && bearing < 157.5) {
-            return "GD";
+            return "SE";
         } else if (bearing >= 157.5 && bearing < 202.5) {
-            return "G";
+            return "S";
         } else if (bearing >= 202.5 && bearing < 247.5) {
-            return "GB";
+            return "SW";
         } else if (bearing >= 247.5 && bearing < 292.5) {
-            return "B";
+            return "W";
         } else if (bearing >= 292.5 && bearing < 337.5) {
-            return "KB";
+            return "NW";
         }
     }
 
@@ -411,7 +410,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.getElementById('clearArrowsBtn').addEventListener('click', clearArrows);
 
-    function visualizeResultsOnMap(results) {
+    function visualizeShootingResults(results) {
         results.forEach(result => {
             var marker = markers.find(m => m.id === result.id);
             if (marker) {
@@ -419,6 +418,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 marker.circle.setStyle({color: color, fillColor: color});
             }
         });
+
+        // Export results to Excel
+        exportResultsToExcel(results);
+    }
+
+    function visualizePrioritization(results) {
+        // Add priority numbers to the markers based on ARAS ranking
+        results.sort((a, b) => b.totalScore - a.totalScore || a.distance - b.distance).forEach((result, index) => {
+            var marker = markers.find(m => m.id === result.id);
+            if (marker) {
+                var priorityIconHtml = `<div style='position: relative;'>
+                                            <div style='background-color: yellow; color: black; font-weight: bold; border-radius: 50%; width: 24px; height: 24px; text-align: center; line-height: 24px;'>${index + 1}</div>
+                                        </div>`;
+                marker.marker.setIcon(L.divIcon({
+                    className: 'custom-div-icon',
+                    html: priorityIconHtml,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                }));
+            }
+        });
+
+        // Add link to open ARAS results in a new tab
+        const resultsLink = document.createElement('a');
+        resultsLink.href = 'aras_results.html';
+        resultsLink.target = '_blank';
+        resultsLink.textContent = 'View Detailed ARAS Results';
+        resultsLink.style.display = 'block';
+        resultsLink.style.marginTop = '10px';
+        resultsLink.style.color = '#007bff';
+        resultsLink.style.textDecoration = 'underline';
+
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.appendChild(resultsLink);
+
+        // Save results to local storage to pass to the new tab
+        localStorage.setItem('arasResults', JSON.stringify(results));
     }
 
     function clearVisualizationResults() {
@@ -444,20 +480,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 }));
             }
         });
+
+        const resultsLink = document.querySelector('#results a');
+        if (resultsLink) {
+            resultsLink.remove();
+        }
     }
 
     document.getElementById('clearResultsBtn').addEventListener('click', clearVisualizationResults);
 
-    // Kriter ağırlıklarının güncellenmesi
+    // Update criteria weights
     document.getElementById('updateCriteriaBtn').addEventListener('click', function() {
         criteriaWeights.cost = parseFloat(document.getElementById('costWeight').value);
         criteriaWeights.range = parseFloat(document.getElementById('rangeWeight').value);
         criteriaWeights.effectiveness = parseFloat(document.getElementById('effectivenessWeight').value);
         criteriaWeights.fireRate = parseFloat(document.getElementById('fireRateWeight').value);
-        alert('Kriter ağırlıkları güncellendi.');
+        alert('Criteria weights updated.');
     });
 
-    // Kriter ağırlıkları
+    // Criteria weights
     const criteriaWeights = {
         cost: 0.25,
         range: 0.25,
@@ -465,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fireRate: 0.25
     };
 
-    // ARAS yöntemi ile toplam puan hesaplama
+    // Calculate total score using ARAS method
     function calculateARAS(scores, weights) {
         return scores.map(score => {
             const totalScore = Object.keys(weights).reduce((sum, criterion) => {
@@ -505,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedTargetId = document.getElementById('targetSelection').value;
         const selectedTarget = markers.find(marker => marker.id == selectedTargetId);
         if (!selectedTarget) {
-            alert('Seçilen hedef bulunamadı.');
+            alert('Selected target not found.');
             return;
         }
 
@@ -521,42 +562,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        displayRankedMevzis(finalRankedMevzis, selectedTarget);
+        // Visualize the results of the ARAS method on the map
+        visualizePrioritization(finalRankedMevzis);
     });
-
-    // Updated function to display ranked positions
-    function displayRankedMevzis(rankedMevzis, selectedTarget) {
-        const resultsDiv = document.getElementById('results');
-        resultsDiv.innerHTML = '<h3>Mevzi Önceliklendirme Sonuçları</h3>';
-
-        rankedMevzis.forEach(mevzi => {
-            const mevziDiv = document.createElement('div');
-            var marker = markers.find(m => m.id === mevzi.id);
-            
-            if (marker) {
-                const distance = haversineDistance(marker.latlng, selectedTarget.latlng).toFixed(2);
-                mevziDiv.textContent = `Mevzi: ${marker.label}, Toplam Puan: ${mevzi.totalScore.toFixed(2)}, Mesafe: ${distance} m`;
-            } else {
-                mevziDiv.textContent = `Mevzi: ${mevzi.id}, Toplam Puan: ${mevzi.totalScore.toFixed(2)}, Mesafe: Bilinmiyor`;
-            }
-            
-            resultsDiv.appendChild(mevziDiv);
-        });
-
-        // Open results in a new tab with a visually enhanced presentation
-        openResultsInNewTab(rankedMevzis);
-    }
-
-    // Function to open results in a new tab with Bootstrap styling
-    function openResultsInNewTab(results) {
-        const resultsWindow = window.open('aras_results.html', '_blank');
-
-        // Save results to local storage to pass to the new tab
-        localStorage.setItem('arasResults', JSON.stringify(results));
-
-        resultsWindow.onload = function() {
-            // Trigger the script to populate the table once the new tab is loaded
-            resultsWindow.populateResults(results);
-        };
-    }
 });
