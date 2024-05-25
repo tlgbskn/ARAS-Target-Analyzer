@@ -29,30 +29,37 @@ button {
 button:hover {
     background-color: #0056b3;
 }
-.criteria-panel {
-    padding: 20px;
-    background: #f4f4f4;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    text-align: center;
-    margin-top: 20px;
-}
-.criteria-panel label {
-    display: block;
-    margin: 10px 0;
-}
+
 .arrow-head {
     fill-opacity: 0.7;
     fill: #f00;
 }
 
 .criteria-panel {
-    padding: 20px;
-    background: #f4f4f4;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    text-align: center;
-    margin-top: 20px;
+    margin: 20px 0;
 }
-.criteria-panel label {
-    display: block;
-    margin: 10px 0;
+
+.criteria-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* space between labels */
+}
+
+.criteria-container label {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* space between label text and input */
+}
+#resultsLink {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+}
+
+#resultsLink:hover {
+    background-color: #0056b3;
 }
