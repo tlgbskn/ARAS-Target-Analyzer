@@ -38,11 +38,16 @@
     </div>
     <div class="criteria-panel">
         <h3>Kriter Ağırlıklarını Belirleyin</h3>
-        <label>Maliyet (-): <input type="number" id="costWeight" step="0.01" value="0.4"></label>
-        <label>Menzil (-): <input type="number" id="rangeWeight" step="0.01" value="0.4"></label>
-        <label>Etkinlik Skoru (+): <input type="number" id="effectivenessWeight" step="0.1" value="0.25"></label>
-        <label>Atış Hızı (+): <input type="number" id="fireRateWeight" step="0.01" value="0.1"></label>
-        <button id="updateCriteriaBtn">Kriterleri Güncelle</button>
+        <div class="criteria-container">
+            <label>Maliyet (-): <input type="number" id="costWeight" step="0.01" value="0.4"></label>
+            <label>Menzil (-): <input type="number" id="rangeWeight" step="0.01" value="0.4"></label>
+            <label>Etkinlik Skoru (+): <input type="number" id="effectivenessWeight" step="0.1" value="0.25"></label>
+            <label>Atış Hızı (+): <input type="number" id="fireRateWeight" step="0.01" value="0.1"></label>
+        </div>
+        <div class="button-container">
+            <button id="updateCriteriaBtn">Kriterleri Güncelle</button>
+            <a id="resultsLink" href="aras_results.html" target="_blank">View Detailed ARAS Results</a>
+        </div>
     </div>
     <div id="results"></div>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
