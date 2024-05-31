@@ -43,7 +43,29 @@ document.addEventListener('DOMContentLoaded', function() {
     var weaponSystems = [
         { name: '120mm Havan', range: 8750, cost: 2000, effectiveness: 0.8, fireRate: 8, defense: 6 },
         { name: '81mm Havan', range: 5850, cost: 1500, effectiveness: 0.7, fireRate: 5, defense: 5 },
-        { name: 'Fırtına Obüs', range: 40500, cost: 8000, effectiveness: 0.9, fireRate: 9, defense: 7 }
+        { name: '75mm M1 Dağ Obüsü', range: 8677, cost: 1000, effectiveness: 0.7, fireRate: 5, defense: 5 },
+        { name: '105mm M101A1 Çekili Obüs', range: 11270, cost: 3000, effectiveness: 0.85, fireRate: 9, defense: 6 },
+        { name: '155mm M114A1/A2 Çekili Obüs Klasik', range: 18100, cost: 3500, effectiveness: 0.9, fireRate: 9, defense: 5 },
+        { name: '155mm M114A1/A2 Çekili Obüs GKM', range: 28100, cost: 3500, effectiveness: 0.9, fireRate: 9, defense: 5 },
+        { name: '155mm M52T K/M OBÜS Klasik', range: 18100, cost: 3500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '155mm M52T K/M OBÜS GKM', range: 28100, cost: 3500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: 'T155mm PANTER ÇEKİLİ K/H OBÜS KLASİK', range: 18100, cost: 3500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: 'T155mm PANTER ÇEKİLİ K/H OBÜS GKM', range: 28100, cost: 3500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: 'T155mm PANTER ÇEKİLİ K/H OBÜS UZUN MENZİLLİ', range: 40000, cost: 5500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: 'T155mm FIRTINA K/M OBÜS KLASİK', range: 18100, cost: 5500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: 'T155mm FIRTINA K/M OBÜS GKM', range: 28100, cost: 5500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: 'T155mm FIRTINA K/M OBÜS UZUN MENZİLLİ', range: 40000, cost: 5500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: 'T155mm FIRTINA K/M OBÜS V-LAP', range: 56000, cost: 6500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '175mm M107 K/M TOP KLASİK', range: 32700, cost: 6500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '203mm M110A2 K/M OBÜS KLASİK', range: 17900, cost: 3500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '203mm M110A2 K/M OBÜS GKM', range: 23400, cost: 4500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '203mm M110A2 K/M OBÜS UZUN MENZİLLİ', range: 30000, cost: 5500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '107mm ÇNRA TD107', range: 8000, cost: 6500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '107mm ÇNRA TR107', range: 11000, cost: 6500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '302mm ÇNRA', range: 80000, cost: 7500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '302mm ÇNRA K(+) BLOK-1', range: 120000, cost: 6500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '302mm ÇNRA K(+) BLOK-2', range: 90000, cost: 6500, effectiveness: 0.9, fireRate: 9, defense: 6 },
+        { name: '610mm BORA', range: 280000, cost: 6500, effectiveness: 0.9, fireRate: 9, defense: 6 },
     ];
 
     function addMarker(latlng, type, label) {
@@ -86,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             select.addEventListener('change', function() {
                 var selectedOption = select.options[select.selectedIndex];
-                markerRange = parseInt(selectedOption.value, 10) || 0;
+                var markerRange = parseInt(selectedOption.value, 10) || 0;
                 var systemCost = parseFloat(selectedOption.getAttribute('data-cost')) || 0;
                 var systemEffectiveness = parseFloat(selectedOption.getAttribute('data-effectiveness')) || 0;
                 var systemFireRate = parseFloat(selectedOption.getAttribute('data-fireRate')) || 0;
@@ -94,14 +116,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (marker.circle) {
                     marker.circle.setRadius(markerRange);
+                } else {
+                    marker.circle = L.circle(latlng, {
+                        color: 'black',
+                        fillColor: color,
+                        fillOpacity: 0.1,
+                        radius: markerRange,
+                        dashArray: '10, 5',
+                        dashOffset: '0'
+                    }).addTo(map);
                 }
 
-                mevziMenzilleri[id - 1] = { range: markerRange, cost: systemCost, effectiveness: systemEffectiveness, fireRate: systemFireRate, name: systemName };
+                var mevziIndex = mevziMenzilleri.findIndex(m => m.id === id);
+                if (mevziIndex !== -1) {
+                    mevziMenzilleri[mevziIndex] = { id: id, range: markerRange, cost: systemCost, effectiveness: systemEffectiveness, fireRate: systemFireRate, name: systemName, label: label };
+                } else {
+                    mevziMenzilleri.push({ id: id, range: markerRange, cost: systemCost, effectiveness: systemEffectiveness, fireRate: systemFireRate, name: systemName, label: label });
+                }
+
+                savePositionData();
             });
         }
 
         marker.bindPopup(popupContent);
-        mevziMenzilleri[id - 1] = { range: markerRange, cost: 0, effectiveness: 0, fireRate: 0, name: "", label: label };
+        mevziMenzilleri.push({ id: id, range: 0, cost: 0, effectiveness: 0, fireRate: 0, name: "", label: label });
 
         var circleRadius = (type === 'kisitlama' ? 800 : 0);
         if (type === 'kisitlama' || type === 'mevzii') {
@@ -143,6 +181,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (type === 'hedef') {
             updateTargetOptions();
         }
+
+        savePositionData();
+    }
+
+    function savePositionData() {
+        var positions = markers.map(marker => ({
+            id: marker.id,
+            label: marker.label
+        }));
+        localStorage.setItem('positions', JSON.stringify(positions));
+
+        var mevziMenzilleriData = markers.map(marker => {
+            var mevziData = mevziMenzilleri.find(mevzi => mevzi.id === marker.id);
+            return mevziData ? mevziData : { id: marker.id, name: '', label: marker.label, range: 0, cost: 0, effectiveness: 0, fireRate: 0 };
+        });
+        localStorage.setItem('mevziMenzilleri', JSON.stringify(mevziMenzilleriData));
     }
 
     map.on('click', function(e) {
@@ -565,4 +619,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Visualize the results of the ARAS method on the map
         visualizePrioritization(finalRankedMevzis);
     });
+
+    
 });
