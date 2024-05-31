@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Atış Bilgisi Girişi</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="noktatanimlamastyle.css">
+    <style>
+        .target-marker {
+            color: red;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Atış Bilgisi Girişi</h2>
+        <form id="shootingEntryForm" class="mt-4">
+            <div class="form-group">
+                <label for="selectedPosition">Mevzi Seçimi</label>
+                <select class="form-control" id="selectedPosition" required>
+                    <option value="">Mevzi Seçiniz</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="weaponSystem">Silah Sistemi</label>
+                <input type="text" class="form-control" id="weaponSystem" placeholder="Silah Sistemi" readonly>
+            </div>
+            <div class="form-group">
+                <label for="selectedTarget">Hedef Seçimi</label>
+                <select class="form-control" id="selectedTarget" required>
+                    <option value="">Hedef Seçiniz</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="shotRegion">Atış Yapılan Bölge</label>
+                <input type="text" class="form-control" id="shotRegion" placeholder="Atış Yapılan Bölge" required>
+            </div>
+            <div class="form-group">
+                <label for="shotCount">Atış Adedi</label>
+                <input type="number" class="form-control" id="shotCount" placeholder="Atış Adedi" required>
+            </div>
+            <div class="form-group">
+                <label for="distance">Mesafe (m)</label>
+                <input type="number" class="form-control" id="distance" placeholder="Mesafe" required>
+            </div>
+            <div class="form-group">
+                <label for="munitionType">Mühimmat Türü</label>
+                <input type="text" class="form-control" id="munitionType" placeholder="Mühimmat Türü" required>
+            </div>
+            <div class="form-group">
+                <label for="angleDegree">Atış Açısı (Derece)</label>
+                <input type="number" class="form-control" id="angleDegree" placeholder="Derece" required>
+            </div>
+            <div class="form-group">
+                <label for="angleMils">Atış Açısı (Milyem)</label>
+                <input type="number" class="form-control" id="angleMils" placeholder="Milyem" required>
+            </div>
+            <div class="form-group">
+                <label for="hitResult">Vurulup Vurulmadığı</label>
+                <select class="form-control" id="hitResult" required>
+                    <option value="hit">Vurdu</option>
+                    <option value="miss">Vurmadı</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <button type="button" class="btn btn-secondary" id="queryButton">Sorgula</button>
+            <button type="button" class="btn btn-success" id="exportButton">Excel'e Aktar</button>
+        </form>
+        <div class="mt-4">
+            <h3>Kaydedilen Atışlar</h3>
+            <table class="table table-bordered" id="shootingDataTable">
+                <thead>
+                    <tr>
+                        <th>Mevzi</th>
+                        <th>Silah Sistemi</th>
+                        <th>Hedef</th>
+                        <th>Atış Bölgesi</th>
+                        <th>Atış Adedi</th>
+                        <th>Mesafe (m)</th>
+                        <th>Mühimmat Türü</th>
+                        <th>Atış Açısı (Derece)</th>
+                        <th>Atış Açısı (Milyem)</th>
+                        <th>Sonuç</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Veriler burada görüntülenecek -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="shooting_entry.js"></script>
+</body>
+</html>
